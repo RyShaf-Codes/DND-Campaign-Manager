@@ -6,5 +6,11 @@ class Player:
         self.level = level
         self.race = race
 
-
-    
+    def to_dict(self):
+        return {
+            "player_name": self.player_name,
+            "character_name": self.character_name,
+            "character_class": self.character_class,
+            "level": self.level,
+            "race": self.race
+        }

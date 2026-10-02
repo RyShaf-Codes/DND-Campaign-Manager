@@ -10,3 +10,10 @@ class Campaign:
 
     def remove_player(self, player):
         self.players.remove(player) 
+
+    def to_dict(self):
+        return{
+            "campaign_name": self.name,
+            "dm_name": self.dm_name,
+
+        }
