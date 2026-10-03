@@ -1,5 +1,6 @@
 from campaign import Campaign
 from player import Player
+import json
 
 # OPTION 1: function that will add players and their attributes
 def add_player(campaign):
@@ -101,13 +102,62 @@ def campaign_info(campaign):
     print(f"Your DM's name: {campaign.dm_name}")
     print(f"Your campaign system: {campaign.system} \n\n")
 
-print("=== Campaign Manager ===")
+# OPTION 6: Save campaign info to JSON file
+def save_campaign(campaign):
+    with open("campaign.json", "w") as file:
+        json.dump(campaign.to_dict(), file, indent=4)
 
-campaign_name = input("Enter your campaign name: ")
-dm_name = input("What is the DM's name? ")
-system = input("What is the campaign system? ")
+    print("Saved!")
 
-campaign = Campaign(campaign_name, dm_name, system)
+def load_campaign():
+    with open("campaign.json", "r") as file:
+        data = json.load(file)
+
+        campaign = Campaign(
+            data["campaign_name"], 
+            data["dm_name"], 
+            data["system"])
+
+        for player_data in data["players"]:
+            player = Player(
+                player_name = player_data["player_name"],
+                character_name = player_data["character_name"],
+                character_class = player_data["character_class"],
+                level = player_data["level"],
+                race = player_data["race"]
+            )
+
+            campaign.add_player(player)
+
+        return campaign
+
+
+print("=== Campaign Manager === \n \n")
+
+while True:
+    option = input("""Choose an option:
+    1. Create a new campaign
+    2. Load campaign
+    3. Quit
+    """)
+
+    if option == "1":
+        campaign_name = input("Enter your campaign name: ")
+        dm_name = input("What is the DM's name? ")
+        system = input("What is the campaign system? ")
+        campaign = Campaign(campaign_name, dm_name, system)
+        break
+
+    elif option == "2":
+        campaign = load_campaign()
+        print("Load completed")
+        break
+
+    elif option == "3":
+        exit()
+
+    else:
+        print("Invalid input. Please choose between the given options.")
 
 while True:
     option = input("""Choose an option: 
@@ -116,7 +166,9 @@ while True:
    3. View players
    4. Edit players
    5. View campaign info
-   6. Quit \n""")
+   6. Save campaign
+   7. Load Campaign
+   8. Quit \n""")
    
     if option == "1":
         add_player(campaign)
@@ -134,6 +186,12 @@ while True:
         campaign_info(campaign)
 
     elif option == "6":
+        save_campaign(campaign)
+
+    elif option == "7":
+        campaign = load_campaign()
+
+    elif option == "8":
         break
 
     else:

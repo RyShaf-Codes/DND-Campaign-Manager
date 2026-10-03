@@ -12,8 +12,9 @@ class Campaign:
         self.players.remove(player) 
 
     def to_dict(self):
-        return{
+        return {
             "campaign_name": self.name,
             "dm_name": self.dm_name,
-
+            "system": self.system,
+            "players": [player.to_dict() for player in self.players] #for JSON, make a list of dict of player object data found in player class
         }

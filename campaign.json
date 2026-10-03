@@ -1,0 +1,14 @@
+{
+    "campaign_name": "Phandelver",
+    "dm_name": "Ryan",
+    "system": "5e",
+    "players": [
+        {
+            "player_name": "Rylie",
+            "character_name": "Porter",
+            "character_class": "Fighter",
+            "level": 2,
+            "race": "Elf"
+        }
+    ]
+}
