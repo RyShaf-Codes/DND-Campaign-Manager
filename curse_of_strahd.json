@@ -1,0 +1,14 @@
+{
+    "campaign_name": "Curse of Strahd",
+    "dm_name": "Ryan",
+    "system": "5e",
+    "players": [
+        {
+            "player_name": "Ryan",
+            "character_name": "Hans Crackens",
+            "character_class": "Cleric",
+            "level": 5,
+            "race": "Human"
+        }
+    ]
+}

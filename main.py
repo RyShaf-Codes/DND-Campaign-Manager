@@ -1,6 +1,7 @@
 from campaign import Campaign
 from player import Player
 import json
+import os
 
 # OPTION 1: function that will add players and their attributes
 def add_player(campaign):
@@ -104,13 +105,47 @@ def campaign_info(campaign):
 
 # OPTION 6: Save campaign info to JSON file
 def save_campaign(campaign):
-    with open("campaign.json", "w") as file:
+    filename = campaign.name.lower().replace(" ", "_")
+
+    with open(f"{filename}.json", "w") as file:
         json.dump(campaign.to_dict(), file, indent=4)
 
     print("Saved!")
 
+# OPTION 7: Load an exisiting campaign. This option also exists at the start menu
 def load_campaign():
-    with open("campaign.json", "r") as file:
+    campaign_titles = [
+        file for file in os.listdir()
+        if file.endswith(".json")
+        ]
+    
+    if len(campaign_titles) <= 0:
+        print("There are no campaigns saved to load!")
+        return None
+    
+    while True:
+        for i, title in enumerate(campaign_titles, 1):
+            with open(title, "r") as file:
+                title_data = json.load(file)
+
+                print(f"{i}. {title_data['campaign_name']}")
+
+        try:
+            option = int(input("Enter the campaign you want to load: "))
+
+        except ValueError:
+            print("Please enter a number.")
+            continue
+
+        if option < 1 or option > len(campaign_titles):
+            print("Invalid choice. Please input a number associated with a campaign.")
+        
+        else: 
+            selected_campaign = campaign_titles[option - 1]
+            break
+
+
+    with open(f"{selected_campaign}", "r") as file:
         data = json.load(file)
 
         campaign = Campaign(
@@ -129,11 +164,23 @@ def load_campaign():
 
             campaign.add_player(player)
 
+        print("Load completed")
+
         return campaign
 
+def new_campaign():
+    campaign_name = input("Enter your campaign name: ")
+    dm_name = input("What is the DM's name? ")
+    system = input("What is the campaign system? ")
+    campaign = Campaign(campaign_name, dm_name, system)
+
+    save_campaign(campaign)
+
+    return campaign
 
 print("=== Campaign Manager === \n \n")
 
+# Give the option to make a new campaign or load an existing one
 while True:
     option = input("""Choose an option:
     1. Create a new campaign
@@ -142,16 +189,15 @@ while True:
     """)
 
     if option == "1":
-        campaign_name = input("Enter your campaign name: ")
-        dm_name = input("What is the DM's name? ")
-        system = input("What is the campaign system? ")
-        campaign = Campaign(campaign_name, dm_name, system)
+        campaign = new_campaign()
         break
 
     elif option == "2":
-        campaign = load_campaign()
-        print("Load completed")
-        break
+        loaded_campaign = load_campaign()
+
+        if loaded_campaign is not None:
+            campaign = loaded_campaign
+            break
 
     elif option == "3":
         exit()
@@ -167,8 +213,9 @@ while True:
    4. Edit players
    5. View campaign info
    6. Save campaign
-   7. Load Campaign
-   8. Quit \n""")
+   7. Load campaign
+   8. New campaign
+   9. Quit \n""")
    
     if option == "1":
         add_player(campaign)
@@ -189,9 +236,23 @@ while True:
         save_campaign(campaign)
 
     elif option == "7":
-        campaign = load_campaign()
+        loaded_campaign = load_campaign()
+
+        if loaded_campaign is not None:
+            campaign = loaded_campaign
 
     elif option == "8":
+        campaign = new_campaign()
+
+    elif option == "9":
+        choice = input("Would you like to save before exiting? (y/n)\n")
+
+        if choice == 'y':
+            save_campaign(campaign)
+
+        elif choice == 'n':
+            break
+        
         break
 
     else:
