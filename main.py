@@ -2,6 +2,7 @@ from campaign import Campaign
 from player import Player
 from npc import NPC
 from location import Location
+from note import Note
 import json
 import os
 
@@ -183,6 +184,15 @@ def load_campaign():
             )
             campaign.add_location(location)
 
+        for note_data in data.get("notes", []):
+            note = Note(
+                note_title = note_data["note_title"],
+                note_category = note_data["note_category"],
+                note_content = note_data["note_content"],
+                note_visibility = note_data["note_visibility"],
+            )
+            campaign.add_note(note)
+
         print("Load completed")
 
         return campaign
@@ -361,6 +371,88 @@ def view_locations(campaign):
 
     print("\n")
 
+def add_note(campaign):
+    while True:
+        note_title = input("Enter the title of the note (or 'done' to finish): ")
+        if note_title != "done":
+            note_category = input(f"What category is {note_title}? ")
+            note_content = input(f"Content: ")
+            note_visibility = input(f"Visibility: ")
+            print("\n")
+
+            note = Note(note_title, note_category, note_content, note_visibility)
+
+            campaign.add_note(note)
+
+        elif note_title == "done":
+            break
+
+def remove_note(campaign):
+    while True:
+        inputted_note = input("Enter a note you want to remove (or 'done' to finish): ")
+
+        if inputted_note == "done":
+            break
+        for current_note in campaign.notes:
+            if inputted_note == current_note.note_title: 
+                campaign.remove_note(current_note)
+                break
+        else:
+            print("Note was not found. Check your input and try again.")
+
+def edit_note(campaign):
+    while True:
+        inputted_note = input("Enter a note you want to edit (or 'done' to finish): ")
+
+        if inputted_note == "done":
+            break
+        for current_note in campaign.notes:
+            if inputted_note == current_note.note_title:
+                while True:
+                    choice = input(f"""What would you like to edit for {current_note.note_title}?
+                    1. Note Title
+                    2. Note Category
+                    3. Note Content
+                    4. Note Visibility
+                    5. Exit Editing
+                    """)
+                        
+                    if choice == "1":
+                        new_title = input("Input the notes new title: ")
+                        current_note.note_title = new_title
+
+                    elif choice == "2":
+                        new_category = input("Input the note's new category: ")
+                        current_note.note_category = new_category
+
+                    elif choice == "3":
+                        new_content = input("Input the new content: ")
+                        current_note.note_content = new_content
+
+                    elif choice == "4":
+                        new_visibility = input("Input the new visibility: ")
+                        current_note.note_visibility = new_visibility
+
+                    elif choice == "5":
+                        break
+
+                    else:
+                        print("Invalid choice. Please choose one of the options listed.")
+                break
+        else:
+            print("Note was not found. Check your input and try again.")
+
+def view_notes(campaign):
+    print("Notes:\n")
+    for current_note in campaign.notes:
+        print(f"Note Title: {current_note.note_title} ")
+        print(f"Note Category: {current_note.note_category}")
+        print(f"Note Content: {current_note.note_content}")
+        print(f"Note Visibility: {current_note.note_visibility}")
+        print("\n")
+
+    print("\n")
+
 print("=== Campaign Manager === \n \n")
 
 # Give the option to make a new campaign or load an existing one
@@ -393,11 +485,12 @@ while True:
    1. Player Menu
    2. NPC Menu
    3. Location Menu
-   4. View campaign info
-   5. Save campaign
-   6. Load campaign
-   7. New campaign
-   8. Quit \n""")
+   4. Notes Menu
+   5. View campaign info
+   6. Save campaign
+   7. Load campaign
+   8. New campaign
+   9. Quit \n""")
    
     if option == "1":
         while True:
@@ -484,21 +577,49 @@ while True:
                 print("Invalid input. Please choose between the given options.")
 
     elif option == "4":
-        campaign_info(campaign)
+        while True:
+            choice = input("""What would you like to access?
+            1. Add Note
+            2. Remove Note
+            3. Edit Note
+            4. View Notes
+            5. Exit Editing
+            \n""")
+
+            if choice == "1":
+                add_note(campaign)
+
+            elif choice == "2":
+                remove_note(campaign)
+
+            elif choice == "3":
+                edit_note(campaign)
+
+            elif choice == "4":
+                view_notes(campaign)
+
+            elif choice == "5":
+                break
+
+            else:
+                print("Invalid input. Please choose between the given options.")
 
     elif option == "5":
-        save_campaign(campaign)
+        campaign_info(campaign)
 
     elif option == "6":
+        save_campaign(campaign)
+
+    elif option == "7":
         loaded_campaign = load_campaign()
 
         if loaded_campaign is not None:
             campaign = loaded_campaign
 
-    elif option == "7":
+    elif option == "8":
         campaign = new_campaign()
 
-    elif option == "8":
+    elif option == "9":
         while True:
             choice = input("Would you like to save before exiting? (y/n)\n")
 

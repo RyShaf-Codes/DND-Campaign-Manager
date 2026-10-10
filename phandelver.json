@@ -26,5 +26,13 @@
             "location_region": "Sword Coast",
             "location_description": "Uhhhh, I'll fill this in later lol"
         }
+    ],
+    "notes": [
+        {
+            "note_title": "The Shattered Obelisk",
+            "note_category": "Lore",
+            "note_content": "Strange fragments are scattered throughout the region.",
+            "note_visibility": "DM"
+        }
     ]
 }
