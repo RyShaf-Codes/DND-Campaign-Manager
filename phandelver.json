@@ -10,5 +10,13 @@
             "level": 2,
             "race": "Elf"
         }
+    ],
+    "npcs": [
+        {
+            "npc_name": "Sildar Halwinter",
+            "npc_level": 3,
+            "npc_class": "Fighter",
+            "npc_race": "Human"
+        }
     ]
 }

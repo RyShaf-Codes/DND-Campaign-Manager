@@ -1,5 +1,6 @@
 from campaign import Campaign
 from player import Player
+from npc import NPC
 import json
 import os
 
@@ -161,8 +162,16 @@ def load_campaign():
                 level = player_data["level"],
                 race = player_data["race"]
             )
-
             campaign.add_player(player)
+
+        for npc_data in data.get("npcs", []):
+            npc = NPC(
+                npc_name = npc_data["npc_name"],
+                npc_level = npc_data["npc_level"],
+                npc_race = npc_data["npc_race"],
+                npc_class = npc_data["npc_class"]
+            )
+            campaign.add_npc(npc)
 
         print("Load completed")
 
@@ -177,6 +186,88 @@ def new_campaign():
     save_campaign(campaign)
 
     return campaign
+
+def add_npc(campaign):
+    while True:
+        npc_name = input("Enter the NPC's name (or 'done' to finish): ")
+        if npc_name != "done":
+            npc_class = input(f"Enter the class for {npc_name}'s character: ")
+            npc_level = int(input(f"Enter the level for {npc_name}'s character: "))
+            npc_race = input(f"Enter the race for {npc_name}'s character: ")
+            print("\n")
+
+            npc = NPC(npc_name, npc_level, npc_race, npc_class)
+
+            campaign.add_npc(npc)
+
+        elif npc_name == "done":
+            break
+
+def remove_npc(campaign):
+    while True:
+        inputted_npc = input("Enter a npc you want to remove (or 'done' to finish): ")
+
+        if inputted_npc == "done":
+            break
+        for current_npc in campaign.npcs:
+            if inputted_npc == current_npc.npc_name: 
+                campaign.remove_npc(current_npc)
+                break
+        else:
+            print("NPC was not found. Check your input and try again.")
+
+def edit_npc(campaign):
+    while True:
+        inputted_npc = input("Enter a NPC you want to edit (or 'done' to finish): ")
+
+        if inputted_npc == "done":
+            break
+        for current_npc in campaign.npcs:
+            if inputted_npc == current_npc.npc_name:
+                while True:
+                    choice = input(f"""What would you like to edit for {current_npc.npc_name}?
+                    1. NPC Name
+                    2. NPC Class
+                    3. NPC Level
+                    4. NPC Race
+                    5. Exit Editing
+                    """)
+                        
+                    if choice == "1":
+                        new_name = input("Input the NPC's name: ")
+                        current_npc.npc_name = new_name
+
+                    elif choice == "2":
+                        new_class = input("Input the NPC's new class: ")
+                        current_npc.npc_class = new_class
+
+                    elif choice == "3":
+                        new_level = int(input("Input the NPC's new level: "))
+                        current_npc.npc_level = new_level
+
+                    elif choice == "4":
+                        new_race = input("Enter the character's new race: ")
+                        current_npc.npc_race = new_race
+
+                    elif choice == "5":
+                        break
+
+                    else:
+                        print("Invalid choice. Please choose one of the options listed.")
+                break
+        else:
+            print("NPC was not found. Check your input and try again.")
+
+def view_npcs(campaign):
+    print("NPC's:\n")
+    for current_npc in campaign.npcs:
+        print(f"NPC Name: {current_npc.npc_name} ")
+        print(f"NPC Class: {current_npc.npc_class}")
+        print(f"NPC Level: {current_npc.npc_level}")
+        print(f"NPC Race: {current_npc.npc_race}")
+        print("\n")
+
+    print("\n")
 
 print("=== Campaign Manager === \n \n")
 
@@ -215,7 +306,8 @@ while True:
    6. Save campaign
    7. Load campaign
    8. New campaign
-   9. Quit \n""")
+   9. NPC Menu
+   10. Quit \n""")
    
     if option == "1":
         add_player(campaign)
@@ -245,14 +337,47 @@ while True:
         campaign = new_campaign()
 
     elif option == "9":
-        choice = input("Would you like to save before exiting? (y/n)\n")
+        while True:
+            choice = input("""What would you like to access?
+            1. Add NPC
+            2. Remove NPC
+            3. Edit NPC
+            4. View NPC's
+            5. Exit Editing
+            \n""")
 
-        if choice == 'y':
-            save_campaign(campaign)
+            if choice == "1":
+                add_npc(campaign)
 
-        elif choice == 'n':
-            break
-        
+            elif choice == "2":
+                remove_npc(campaign)
+
+            elif choice == "3":
+                edit_npc(campaign)
+
+            elif choice == "4":
+                view_npcs(campaign)
+
+            elif choice == "5":
+                break
+
+            else:
+                print("Invalid input. Please choose between the given options.")
+
+    elif option == "10":
+        while True:
+            choice = input("Would you like to save before exiting? (y/n)\n")
+
+            if choice == 'y':
+                save_campaign(campaign)
+                break
+
+            elif choice == 'n':
+                break
+
+            else:
+                print("Invalid input. Please choose between the given options.")
+
         break
 
     else:
