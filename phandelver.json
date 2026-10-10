@@ -18,5 +18,13 @@
             "npc_class": "Fighter",
             "npc_race": "Human"
         }
+    ],
+    "locations": [
+        {
+            "location_name": "Stonehill Inn",
+            "location_type": "Tavern",
+            "location_region": "Sword Coast",
+            "location_description": "Uhhhh, I'll fill this in later lol"
+        }
     ]
 }

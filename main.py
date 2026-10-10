@@ -1,6 +1,7 @@
 from campaign import Campaign
 from player import Player
 from npc import NPC
+from location import Location
 import json
 import os
 
@@ -173,6 +174,15 @@ def load_campaign():
             )
             campaign.add_npc(npc)
 
+        for location_data in data.get("locations", []):
+            location = Location(
+                location_name = location_data["location_name"],
+                location_type = location_data["location_type"],
+                location_region = location_data["location_region"],
+                location_description = location_data["location_description"],
+            )
+            campaign.add_location(location)
+
         print("Load completed")
 
         return campaign
@@ -269,6 +279,88 @@ def view_npcs(campaign):
 
     print("\n")
 
+def add_location(campaign):
+    while True:
+        location_name = input("Enter the name of the location (or 'done' to finish): ")
+        if location_name != "done":
+            location_type = input(f"What type of location is {location_name}? ")
+            location_region = input(f"What region is {location_name} in? ")
+            location_description = input(f"Enter a description for {location_name}: ")
+            print("\n")
+
+            location = Location(location_name, location_type, location_region, location_description)
+
+            campaign.add_location(location)
+
+        elif location_name == "done":
+            break
+
+def remove_location(campaign):
+    while True:
+        inputted_location = input("Enter a location you want to remove (or 'done' to finish): ")
+
+        if inputted_location == "done":
+            break
+        for current_location in campaign.locations:
+            if inputted_location == current_location.location_name: 
+                campaign.remove_location(current_location)
+                break
+        else:
+            print("Location was not found. Check your input and try again.")
+
+def edit_location(campaign):
+    while True:
+        inputted_location = input("Enter a location you want to edit (or 'done' to finish): ")
+
+        if inputted_location == "done":
+            break
+        for current_location in campaign.locations:
+            if inputted_location == current_location.location_name:
+                while True:
+                    choice = input(f"""What would you like to edit for {current_location.location_name}?
+                    1. Location Name
+                    2. Location Type
+                    3. Location Region
+                    4. Location Description
+                    5. Exit Editing
+                    """)
+                        
+                    if choice == "1":
+                        new_name = input("Input the location's new name: ")
+                        current_location.location_name = new_name
+
+                    elif choice == "2":
+                        new_type = input("Input the location's new type: ")
+                        current_location.location_type = new_type
+
+                    elif choice == "3":
+                        new_region = input("Input the location's new region: ")
+                        current_location.location_region = new_region
+
+                    elif choice == "4":
+                        new_description = input("Enter the character's new description: ")
+                        current_location.location_description = new_description
+
+                    elif choice == "5":
+                        break
+
+                    else:
+                        print("Invalid choice. Please choose one of the options listed.")
+                break
+        else:
+            print("Location was not found. Check your input and try again.")
+
+def view_locations(campaign):
+    print("Locations:\n")
+    for current_location in campaign.locations:
+        print(f"Location Name: {current_location.location_name} ")
+        print(f"Location Type: {current_location.location_type}")
+        print(f"Location Region: {current_location.location_region}")
+        print(f"Location Description: {current_location.location_description}")
+        print("\n")
+
+    print("\n")
+
 print("=== Campaign Manager === \n \n")
 
 # Give the option to make a new campaign or load an existing one
@@ -298,45 +390,44 @@ while True:
 
 while True:
     option = input("""Choose an option: 
-   1. Add player
-   2. Remove player
-   3. View players
-   4. Edit players
-   5. View campaign info
-   6. Save campaign
-   7. Load campaign
-   8. New campaign
-   9. NPC Menu
-   10. Quit \n""")
+   1. Player Menu
+   2. NPC Menu
+   3. Location Menu
+   4. View campaign info
+   5. Save campaign
+   6. Load campaign
+   7. New campaign
+   8. Quit \n""")
    
     if option == "1":
-        add_player(campaign)
+        while True:
+            choice = input("""What would you like to access?
+            1. Add Player
+            2. Remove Player
+            3. Edit Player
+            4. View Players
+            5. Exit Editing
+            \n""")
+
+            if choice == "1":
+                add_player(campaign)
+
+            elif choice == "2":
+                remove_player(campaign)
+
+            elif choice == "3":
+                edit_player(campaign)
+
+            elif choice == "4":
+                view_players(campaign)
+
+            elif choice == "5":
+                break
+
+            else:
+                print("Invalid input. Please choose between the given options.")
         
     elif option == "2":
-        remove_player(campaign)
-
-    elif option == "3":
-        view_players(campaign)
-
-    elif option == "4":
-        edit_player(campaign)
-
-    elif option == "5":
-        campaign_info(campaign)
-
-    elif option == "6":
-        save_campaign(campaign)
-
-    elif option == "7":
-        loaded_campaign = load_campaign()
-
-        if loaded_campaign is not None:
-            campaign = loaded_campaign
-
-    elif option == "8":
-        campaign = new_campaign()
-
-    elif option == "9":
         while True:
             choice = input("""What would you like to access?
             1. Add NPC
@@ -364,7 +455,50 @@ while True:
             else:
                 print("Invalid input. Please choose between the given options.")
 
-    elif option == "10":
+    elif option == "3":
+        while True:
+            choice = input("""What would you like to access?
+            1. Add Location
+            2. Remove Location
+            3. Edit Location
+            4. View Locations
+            5. Exit Editing
+            \n""")
+
+            if choice == "1":
+                add_location(campaign)
+
+            elif choice == "2":
+                remove_location(campaign)
+
+            elif choice == "3":
+                edit_location(campaign)
+
+            elif choice == "4":
+                view_locations(campaign)
+
+            elif choice == "5":
+                break
+
+            else:
+                print("Invalid input. Please choose between the given options.")
+
+    elif option == "4":
+        campaign_info(campaign)
+
+    elif option == "5":
+        save_campaign(campaign)
+
+    elif option == "6":
+        loaded_campaign = load_campaign()
+
+        if loaded_campaign is not None:
+            campaign = loaded_campaign
+
+    elif option == "7":
+        campaign = new_campaign()
+
+    elif option == "8":
         while True:
             choice = input("Would you like to save before exiting? (y/n)\n")
 
