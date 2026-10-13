@@ -1,5 +1,6 @@
 class NPC:
-    def __init__(self, npc_name, npc_level, npc_race, npc_class):
+    def __init__(self, npc_name, npc_class, npc_level, npc_race, npc_id=None):
+        self.id = npc_id
         self.npc_name = npc_name
         self.npc_level = npc_level
         self.npc_class = npc_class

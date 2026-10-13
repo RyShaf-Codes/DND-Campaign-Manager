@@ -1,5 +1,6 @@
 class Campaign:
-    def __init__(self, name, dm_name, system):
+    def __init__(self, name, dm_name, system, campaign_id=None):
+        self.id = campaign_id
         self.name = name
         self.dm_name = dm_name
         self.system = system

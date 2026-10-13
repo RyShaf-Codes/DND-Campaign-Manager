@@ -1,5 +1,6 @@
 class Player:
-    def __init__(self, player_name, character_name, character_class, level, race):
+    def __init__(self, player_name, character_name, character_class, level, race, player_id=None):
+        self.id = player_id
         self.player_name = player_name
         self.character_name = character_name
         self.character_class = character_class

@@ -1,5 +1,6 @@
 class Location:
-    def __init__(self, location_name, location_type, location_region, location_description):
+    def __init__(self, location_name, location_type, location_region, location_description, location_id=None):
+        self.id = location_id
         self.location_name = location_name
         self.location_type = location_type
         self.location_region = location_region

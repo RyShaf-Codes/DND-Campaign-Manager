@@ -1,38 +1,16 @@
 {
     "campaign_name": "Phandelver",
     "dm_name": "Ryan",
-    "system": "5e",
-    "players": [
-        {
-            "player_name": "Rylie",
-            "character_name": "Porter",
-            "character_class": "Fighter",
-            "level": 2,
-            "race": "Elf"
-        }
-    ],
-    "npcs": [
-        {
-            "npc_name": "Sildar Halwinter",
-            "npc_level": 3,
-            "npc_class": "Fighter",
-            "npc_race": "Human"
-        }
-    ],
+    "system": "D&D 5E",
+    "players": [],
+    "npcs": [],
     "locations": [
         {
-            "location_name": "Stonehill Inn",
-            "location_type": "Tavern",
+            "location_name": "Phandalin",
+            "location_type": "City",
             "location_region": "Sword Coast",
-            "location_description": "Uhhhh, I'll fill this in later lol"
+            "location_description": "Its a town dude"
         }
     ],
-    "notes": [
-        {
-            "note_title": "The Shattered Obelisk",
-            "note_category": "Lore",
-            "note_content": "Strange fragments are scattered throughout the region.",
-            "note_visibility": "DM"
-        }
-    ]
+    "notes": []
 }

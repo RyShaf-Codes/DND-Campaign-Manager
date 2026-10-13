@@ -3,8 +3,7 @@ from player import Player
 from npc import NPC
 from location import Location
 from note import Note
-import json
-import os
+import database
 
 # OPTION 1: function that will add players and their attributes
 def add_player(campaign):
@@ -20,6 +19,10 @@ def add_player(campaign):
 
             player = Player(player_name, character_name, character_class, level, race)
 
+            player.id = database.add_player(campaign.id, player_name, character_name, character_class, level, race)
+            print(f"Player Database ID: {player.id}")
+            print(f"Campaign Database ID: {campaign.id}")
+
             campaign.add_player(player)
 
         elif player_name == "done":
@@ -34,6 +37,7 @@ def remove_player(campaign):
             break
         for current_player in campaign.players:
             if inputted_player == current_player.player_name: 
+                database.delete_player(current_player.id)
                 campaign.remove_player(current_player)
                 break
         else:
@@ -96,6 +100,15 @@ def edit_player(campaign):
 
                     else:
                         print("Invalid choice. Please choose one of the options listed.")
+
+                database.update_player(
+                    current_player.id,
+                    current_player.player_name,
+                    current_player.character_name,
+                    current_player.character_class,
+                    current_player.level,
+                    current_player.race
+                )
                 break
         else:
             print("Player was not found. Check your input and try again.")
@@ -106,96 +119,93 @@ def campaign_info(campaign):
     print(f"Your DM's name: {campaign.dm_name}")
     print(f"Your campaign system: {campaign.system} \n\n")
 
-# OPTION 6: Save campaign info to JSON file
-def save_campaign(campaign):
-    filename = campaign.name.lower().replace(" ", "_")
-
-    with open(f"{filename}.json", "w") as file:
-        json.dump(campaign.to_dict(), file, indent=4)
-
-    print("Saved!")
-
 # OPTION 7: Load an exisiting campaign. This option also exists at the start menu
 def load_campaign():
-    campaign_titles = [
-        file for file in os.listdir()
-        if file.endswith(".json")
-        ]
-    
-    if len(campaign_titles) <= 0:
+    campaigns = database.get_campaigns()
+
+    if len(campaigns) <= 0:
         print("There are no campaigns saved to load!")
         return None
+
+    for i, campaign_data in enumerate(campaigns, 1):
+        print(f"{i}. {campaign_data[1]}")
     
     while True:
-        for i, title in enumerate(campaign_titles, 1):
-            with open(title, "r") as file:
-                title_data = json.load(file)
-
-                print(f"{i}. {title_data['campaign_name']}")
-
         try:
             option = int(input("Enter the campaign you want to load: "))
-
         except ValueError:
             print("Please enter a number.")
             continue
 
-        if option < 1 or option > len(campaign_titles):
-            print("Invalid choice. Please input a number associated with a campaign.")
-        
+        if option < 1 or option > len(campaigns):
+            print("Invalid choice. Please input a number associated with a campaign.")  
         else: 
-            selected_campaign = campaign_titles[option - 1]
             break
 
+    selected_campaign = campaigns[option - 1]
 
-    with open(f"{selected_campaign}", "r") as file:
-        data = json.load(file)
+    campaign = Campaign(
+        selected_campaign[1],
+        selected_campaign[2],
+        selected_campaign[3],
+        selected_campaign[0]
+    )
 
-        campaign = Campaign(
-            data["campaign_name"], 
-            data["dm_name"], 
-            data["system"])
+    players = database.get_players(campaign.id)
 
-        for player_data in data["players"]:
-            player = Player(
-                player_name = player_data["player_name"],
-                character_name = player_data["character_name"],
-                character_class = player_data["character_class"],
-                level = player_data["level"],
-                race = player_data["race"]
-            )
-            campaign.add_player(player)
+    for player_data in players:
+        player = Player(
+            player_data[2],
+            player_data[3],
+            player_data[4],
+            player_data[5],
+            player_data[6],
+            player_data[0],
+        )
 
-        for npc_data in data.get("npcs", []):
-            npc = NPC(
-                npc_name = npc_data["npc_name"],
-                npc_level = npc_data["npc_level"],
-                npc_race = npc_data["npc_race"],
-                npc_class = npc_data["npc_class"]
-            )
-            campaign.add_npc(npc)
+        campaign.add_player(player)
 
-        for location_data in data.get("locations", []):
-            location = Location(
-                location_name = location_data["location_name"],
-                location_type = location_data["location_type"],
-                location_region = location_data["location_region"],
-                location_description = location_data["location_description"],
-            )
-            campaign.add_location(location)
+    npcs = database.get_npcs(campaign.id)
 
-        for note_data in data.get("notes", []):
-            note = Note(
-                note_title = note_data["note_title"],
-                note_category = note_data["note_category"],
-                note_content = note_data["note_content"],
-                note_visibility = note_data["note_visibility"],
-            )
-            campaign.add_note(note)
+    for npc_data in npcs:
+        npc = NPC(
+            npc_data[2],
+            npc_data[3],
+            npc_data[4],
+            npc_data[5],
+            npc_data[0],
+        )
 
-        print("Load completed")
+        campaign.add_npc(npc)
 
-        return campaign
+    locations = database.get_locations(campaign.id)
+
+    for location_data in locations:
+        location = Location(
+            location_data[2],
+            location_data[3],
+            location_data[4],
+            location_data[5],
+            location_data[0],
+        )
+
+        campaign.add_location(location)
+
+    notes = database.get_notes(campaign.id)
+    for note_data in notes:
+        note = Note(
+            note_data[2],
+            note_data[3],
+            note_data[4],
+            note_data[5],
+            note_data[0],
+        )
+
+        campaign.add_note(note)
+
+    print("Load completed")
+
+    return campaign
 
 def new_campaign():
     campaign_name = input("Enter your campaign name: ")
@@ -203,7 +213,8 @@ def new_campaign():
     system = input("What is the campaign system? ")
     campaign = Campaign(campaign_name, dm_name, system)
 
-    save_campaign(campaign)
+    campaign.id = database.add_campaign(campaign_name, dm_name, system)
+    print(f"Database ID: {campaign.id}")
 
     return campaign
 
@@ -216,7 +227,8 @@ def add_npc(campaign):
             npc_race = input(f"Enter the race for {npc_name}'s character: ")
             print("\n")
 
-            npc = NPC(npc_name, npc_level, npc_race, npc_class)
+            npc = NPC(npc_name, npc_class, npc_level, npc_race)
+            npc.id = database.add_npc(campaign.id, npc_name, npc_class, npc_level, npc_race)
 
             campaign.add_npc(npc)
 
@@ -231,6 +243,7 @@ def remove_npc(campaign):
             break
         for current_npc in campaign.npcs:
             if inputted_npc == current_npc.npc_name: 
+                database.delete_npc(current_npc.id)
                 campaign.remove_npc(current_npc)
                 break
         else:
@@ -274,6 +287,14 @@ def edit_npc(campaign):
 
                     else:
                         print("Invalid choice. Please choose one of the options listed.")
+
+                database.update_npc(
+                    current_npc.id,
+                    current_npc.npc_name,
+                    current_npc.npc_class,
+                    current_npc.npc_level,
+                    current_npc.npc_race
+                )
                 break
         else:
             print("NPC was not found. Check your input and try again.")
@@ -299,6 +320,7 @@ def add_location(campaign):
             print("\n")
 
             location = Location(location_name, location_type, location_region, location_description)
+            location.id = database.add_location(campaign.id, location_name, location_type, location_region, location_description)
 
             campaign.add_location(location)
 
@@ -313,6 +335,7 @@ def remove_location(campaign):
             break
         for current_location in campaign.locations:
             if inputted_location == current_location.location_name: 
+                database.delete_location(current_location.id)
                 campaign.remove_location(current_location)
                 break
         else:
@@ -356,6 +379,13 @@ def edit_location(campaign):
 
                     else:
                         print("Invalid choice. Please choose one of the options listed.")
+                database.update_location(
+                    current_location.id,
+                    current_location.location_name,
+                    current_location.location_type,
+                    current_location.location_region,
+                    current_location.location_description
+                )
                 break
         else:
             print("Location was not found. Check your input and try again.")
@@ -381,6 +411,7 @@ def add_note(campaign):
             print("\n")
 
             note = Note(note_title, note_category, note_content, note_visibility)
+            note.id = database.add_note(campaign.id, note_title, note_category, note_content, note_visibility)
 
             campaign.add_note(note)
 
@@ -395,6 +426,7 @@ def remove_note(campaign):
             break
         for current_note in campaign.notes:
             if inputted_note == current_note.note_title: 
+                database.delete_note(current_note.id)
                 campaign.remove_note(current_note)
                 break
         else:
@@ -438,6 +470,14 @@ def edit_note(campaign):
 
                     else:
                         print("Invalid choice. Please choose one of the options listed.")
+
+                database.update_note(
+                    current_note.id,
+                    current_note.note_title,
+                    current_note.note_category,
+                    current_note.note_content,
+                    current_note.note_visibility
+                )
                 break
         else:
             print("Note was not found. Check your input and try again.")
@@ -487,10 +527,9 @@ while True:
    3. Location Menu
    4. Notes Menu
    5. View campaign info
-   6. Save campaign
-   7. Load campaign
-   8. New campaign
-   9. Quit \n""")
+   6. Load campaign
+   7. New campaign
+   8. Quit \n""")
    
     if option == "1":
         while True:
@@ -608,31 +647,15 @@ while True:
         campaign_info(campaign)
 
     elif option == "6":
-        save_campaign(campaign)
-
-    elif option == "7":
         loaded_campaign = load_campaign()
 
         if loaded_campaign is not None:
             campaign = loaded_campaign
 
-    elif option == "8":
+    elif option == "7":
         campaign = new_campaign()
 
-    elif option == "9":
-        while True:
-            choice = input("Would you like to save before exiting? (y/n)\n")
-
-            if choice == 'y':
-                save_campaign(campaign)
-                break
-
-            elif choice == 'n':
-                break
-
-            else:
-                print("Invalid input. Please choose between the given options.")
-
+    elif option == "8":
         break
 
     else:

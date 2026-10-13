@@ -1,39 +1,385 @@
 import sqlite3
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "campaign_manager.db"
+
+def get_connection():
+    connection = sqlite3.connect(DB_PATH)
+    connection.execute("PRAGMA foreign_keys = ON")
+    return connection
 
 def add_campaign(name, dm_name, system):
+    connection = get_connection()
+    cursor = connection.cursor()
+
     cursor.execute("""
     INSERT INTO campaigns (name, dm_name, system)
     VALUES (?, ?, ?)
 """, (name, dm_name, system))
-    
-connection = sqlite3.connect("campaign_manager.db")
 
-cursor = connection.cursor()
+    connection.commit()
+    campaign_id = cursor.lastrowid
 
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS campaigns (
+    cursor.close()
+    connection.close()
+
+    return campaign_id
+
+def get_campaigns():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM campaigns")
+    campaigns = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return campaigns
+
+def add_player(campaign_id, player_name, character_name, character_class, level, race):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    INSERT INTO players (campaign_id, player_name, character_name, character_class, level, race)
+    VALUES (?, ?, ?, ?, ?, ?)
+""", (campaign_id, player_name, character_name, character_class, level, race))
+
+    connection.commit()
+    player_id = cursor.lastrowid
+
+    cursor.close()
+    connection.close()  
+
+
+    return player_id
+
+def get_players(campaign_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT * FROM players
+        WHERE campaign_id = ?
+    """, (campaign_id,))
+
+    players = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return players
+
+def add_npc(campaign_id, npc_name, npc_class, npc_level, npc_race):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    INSERT INTO npcs (campaign_id, npc_name, npc_class, npc_level, npc_race)
+    VALUES(?, ?, ?, ?, ?)
+    """, (campaign_id, npc_name, npc_class, npc_level, npc_race))
+
+    connection.commit()
+    npc_id = cursor.lastrowid
+
+    cursor.close()
+    connection.close()  
+
+    return npc_id
+
+def get_npcs(campaign_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT * FROM npcs
+        WHERE campaign_id = ?
+    """, (campaign_id,))
+
+    npcs = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return npcs
+
+def add_location(campaign_id, location_name, location_type, location_region, location_description):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    INSERT INTO locations (campaign_id, location_name, location_type, location_region, location_description)
+    VALUES(?, ?, ?, ?, ?)
+    """, (campaign_id, location_name, location_type, location_region, location_description))
+
+    connection.commit()
+    location_id = cursor.lastrowid
+
+    cursor.close()
+    connection.close()  
+
+    return location_id
+
+def get_locations(campaign_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT * FROM locations
+        WHERE campaign_id = ?
+    """, (campaign_id,))
+
+    locations = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return locations
+
+def add_note(campaign_id, note_title, note_category, note_content, note_visibility):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    INSERT INTO notes (campaign_id, note_title, note_category, note_content, note_visibility)
+    VALUES(?, ?, ?, ?, ?)
+    """, (campaign_id, note_title, note_category, note_content, note_visibility))
+
+    connection.commit()
+    note_id = cursor.lastrowid
+
+    cursor.close()
+    connection.close()  
+
+    return note_id
+
+def get_notes(campaign_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT * FROM notes
+        WHERE campaign_id = ?
+    """, (campaign_id,))
+
+    notes = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return notes
+
+def delete_player(player_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        DELETE FROM players
+        where id = ?
+    """, (player_id,))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+def delete_npc(npc_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        DELETE FROM npcs
+        where id = ?
+    """, (npc_id,))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+def delete_location(location_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        DELETE FROM locations
+        where id = ?
+    """, (location_id,))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+def delete_note(note_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        DELETE FROM notes
+        where id = ?
+    """, (note_id,))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+def update_player(player_id, player_name, character_name, character_class, level, race):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE players
+        SET player_name = ?,
+            character_name = ?,
+            character_class = ?,
+            level = ?,
+            race = ?
+        WHERE id = ?
+    """, (player_name, character_name, character_class, level, race, player_id))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+def update_npc(npc_id, npc_name, npc_class, npc_level, npc_race):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE npcs
+        SET npc_name = ?,
+            npc_class = ?,
+            npc_level = ?,
+            npc_race = ?
+        WHERE id = ?
+    """, (npc_name, npc_class, npc_level, npc_race, npc_id))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+def update_location(location_id, location_name, location_type, location_region, location_description):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE locations
+        SET location_name = ?,
+            location_type = ?,
+            location_region = ?,
+            location_description = ?
+        WHERE id = ?
+    """, (location_name, location_type, location_region, location_description, location_id))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+def update_note(note_id, note_title, note_category, note_content, note_visibility):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE notes
+        SET note_title = ?,
+            note_category = ?,
+            note_content = ?,
+            note_visibility = ?
+        WHERE id = ?
+    """, (note_title, note_category, note_content, note_visibility, note_id))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+def initialize_database():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    # Campain creation
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS campaigns (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            dm_name TEXT NOT NULL,
+            system TEXT NOT NULL
+        )
+    """)
+
+    # Player creation
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS players (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        dm_name TEXT NOT NULL,
-        system TEXT NOT NULL
-    )
-""")
+        campaign_id INTEGER NOT NULL,
+        player_name TEXT NOT NULL,
+        character_name TEXT NOT NULL,
+        character_class TEXT NOT NULL,
+        level INTEGER NOT NULL,
+        race TEXT NOT NULL,
+        
+        FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
+        )
 
-add_campaign("Curse of Strahd", "Ryan", "D&D 5e")
+    """)
 
-connection.commit()
+    # NPC creation
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS npcs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        campaign_id INTEGER NOT NULL,
+        npc_name TEXT NOT NULL,
+        npc_class TEXT NOT NULL,
+        npc_level INTEGER NOT NULL,
+        npc_race TEXT NOT NULL,
+        
+        FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
+        )
 
-cursor.execute("SELECT name FROM sqlite_master where type='table';")
-print(cursor.fetchall())
+    """)
+
+    # Location Creation
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS locations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        campaign_id INTEGER NOT NULL,
+        location_name TEXT NOT NULL,
+        location_type TEXT NOT NULL,
+        location_region TEXT NOT NULL,
+        location_description TEXT NOT NULL,
+        
+        FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
+        )
+
+    """)
+
+    # Note creation
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS notes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        campaign_id INTEGER NOT NULL,
+        note_title TEXT NOT NULL,
+        note_category TEXT NOT NULL,
+        note_content TEXT NOT NULL,
+        note_visibility TEXT NOT NULL,
+        
+        FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
+        )
+
+    """)
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+initialize_database()
 
 
-
-connection.commit()
-
-cursor.execute("SELECT * FROM campaigns")
-
-campaigns = cursor.fetchall()
-
-print(campaigns)
-
-connection.close()
