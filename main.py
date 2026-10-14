@@ -20,8 +20,6 @@ def add_player(campaign):
             player = Player(player_name, character_name, character_class, level, race)
 
             player.id = database.add_player(campaign.id, player_name, character_name, character_class, level, race)
-            print(f"Player Database ID: {player.id}")
-            print(f"Campaign Database ID: {campaign.id}")
 
             campaign.add_player(player)
 

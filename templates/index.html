@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>D&D Campaign Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+</head>
+<body class="bg-slate-950 text-white">
+    <h1 class="text-4xl font-bold text-center mt-12">
+        D&D Campaign Manager
+    </h1>
+
+    <div class="max-w-5xl mx-auto px-6">
+        <h2 class="text-2xl font-semibold mt-10">
+            Your Campaigns
+        </h2>
+    
+    
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {% for campaign in campaigns %}
+                <div class="bg-slate-900 border border-slate-700 rounded-xl p-6">
+                    <p class="text-xl font-bold">
+                        {{ campaign[1] }}
+                    </p>
+                    <p>DM: {{ campaign[2] }}</p>
+                    <p>System: {{ campaign[3] }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>
