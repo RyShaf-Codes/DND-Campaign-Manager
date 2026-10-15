@@ -1,2 +1,3 @@
 __pycache__/
-*.pycnode_modules/
+*.pyc
+node_modules/
