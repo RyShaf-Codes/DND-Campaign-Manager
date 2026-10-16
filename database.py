@@ -38,6 +38,20 @@ def get_campaigns():
 
     return campaigns
 
+def get_campaign(campaign_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT * FROM campaigns
+        WHERE id = ?
+        """, (campaign_id, ))
+    campaign = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    return campaign
 def add_player(campaign_id, player_name, character_name, character_class, level, race):
     connection = get_connection()
     cursor = connection.cursor()

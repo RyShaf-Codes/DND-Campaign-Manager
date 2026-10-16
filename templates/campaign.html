@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ campaign [1] }}
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="text-4xl font-bold text-center mt-12">
+        {{ campaign[1] }}
+    </h1>
+
+    <div class="text-center mt-4">
+        <p class="text-xl font-bold">
+            DM: {{ campaign[2] }}
+        </p>
+
+        <p class="text-xl font-bold mt-1">
+            System: {{ campaign[3] }}
+        </p>
+    </div>
+
+        <div class="max-w-5xl mx-auto px-6">
+            <h2 class="text-2xl font-semibold mt-10">
+                Players: 
+            </h2>
+        
+        
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                {% for player in players %}
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-6">
+                        <p class="text-xl font-bold">
+                            {{ player[2] }}
+                        </p>
+                        <p>Character: {{ player[3] }}</p>
+                        <p>Class: {{ player[4] }}</p>
+                        <p>Level: {{ player[5] }}</p>
+                        <p>Race: {{ player[6] }}</p>
+                    </div>
+
+                {% else %}
+                    <p>No players added yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="max-w-5xl mx-auto px-6">
+            <h2 class="text-2xl font-semibold mt-10">
+                NPCs: 
+            </h2>
+        
+        
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                {% for npc in npcs %}
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-6">
+                        <p class="text-xl font-bold">
+                            {{ npc[2] }}
+                        </p>
+                        <p>Class: {{ npc[3] }}</p>
+                        <p>Level: {{ npc[4] }}</p>
+                        <p>Race: {{ npc[5] }}</p>
+                    </div>
+
+                {% else %}
+                    <p>No NPCs added yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="max-w-5xl mx-auto px-6">
+            <h2 class="text-2xl font-semibold mt-10">
+                Locations: 
+            </h2>
+        
+        
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                {% for location in locations %}
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-6">
+                        <p class="text-xl font-bold">
+                            {{ location[2] }}
+                        </p>
+                        <p>Type: {{ location[3] }}</p>
+                        <p>Region: {{ location[4] }}</p>
+                        <p>Description: {{ location[5] }}</p>
+                    </div>
+                {% else %}
+                    <p>No locations added yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="max-w-5xl mx-auto px-6">
+            <h2 class="text-2xl font-semibold mt-10">
+                Notes: 
+            </h2>
+        
+        
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                {% for note in notes %}
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-6">
+                        <p class="text-xl font-bold">
+                            {{ note[2] }}
+                        </p>
+                        <p>Category: {{ note[3] }}</p>
+                        <p>Content: {{ note[4] }}</p>
+                        <p>Visibility: {{ note[5] }}</p>
+                    </div>
+
+                {% else %}
+                    <p>No notes added yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+{% endblock %}
